@@ -65,6 +65,7 @@ def getPrescrption(apiHost, apiKey, apiParam):
     # for k in prescList:
     #     if latest is not None and k == latest: break
     #     Presc.objects.create(prescNo=k)
+    #
 
 
 
