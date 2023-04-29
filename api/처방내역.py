@@ -61,10 +61,10 @@ def getPrescrption(apiHost, apiKey, apiParam):
             print(j)
 
     # 처방건 일련번호 DB에 저장
-    latest = Presc.objects.get(id=1).prescNo
-    for k in prescList:
-        if latest is not None and k == latest: break
-        Presc.objects.create(prescNo=k)
+    # latest = Presc.objects.get(id=1).prescNo
+    # for k in prescList:
+    #     if latest is not None and k == latest: break
+    #     Presc.objects.create(prescNo=k)
 
 
 
