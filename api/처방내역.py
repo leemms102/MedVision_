@@ -2,10 +2,11 @@ import os, base64
 import requests
 from .암호화 import aesEncrypt, rsaEncrypt, getPublicKey
 from .간편인증 import simpleAuth
+from .낱알정보 import getPillInfo
 from .api_param import API_Param
-from users.models import Presc
+from users.models import Prescription
 
-def getPrescrption(apiHost, apiKey, apiParam):
+def getPrescription(apiHost, apiKey, apiParam):
     # RSA Public Key 조회
     rsaPublicKey = getPublicKey()
     print(f"rsaPublicKey: {rsaPublicKey}")
@@ -44,28 +45,33 @@ def getPrescrption(apiHost, apiKey, apiParam):
             "BirthDate": aesEncrypt(aesKey, aesIv, reqData["BirthDate"]),
             "UserCellphoneNumber": aesEncrypt(aesKey, aesIv, reqData["UserCellphoneNumber"]),
         },
+
     }
 
     # API 호출
-    print("success")
     res = requests.post(url, headers=options['headers'], json=options['json'])
-    # print(f"res: {res.json()}")
     resultList = res.json()["ResultList"]
-    prescList = []
+    latestPrescId = None
 
-    # 처방이력 출력
+    if Prescription.objects.count() != 0:
+        latestPrescId = Prescription.objects.first().prescId
+
+    # prescIdList = []
+    # 지난 1년 처방이력 출력
     for i in resultList:
-        print("처방일자: " + i["DateOfPreparation"])
-        prescList.append(i["No"])
-        for j in i["DrugList"]:
+        print(f"조제일자: {i['DateOfPreparation']}")
+        # 처방건 리스트 추가
+        # prescIdList.append(i['No'])
+
+        # Prescription 모델 DB에 저장
+        if i['No'] != str(latestPrescId) or latestPrescId is None:
+            Prescription(prescId=i['No'], prescDate=i['DateOfPreparation'], dispensary=i['Dispensary']).save()
+
+        # 처방내역 상세정보 출력
+        for j in i['DrugList']:
             print(j)
+            print(j['Code'])
+            getPillInfo(j['Code'])
 
-    # 처방건 일련번호 DB에 저장
-    # latest = Presc.objects.get(id=1).prescNo
-    # for k in prescList:
-    #     if latest is not None and k == latest: break
-    #     Presc.objects.create(prescNo=k)
-    #
-
-
+    # return prescIdList
 
