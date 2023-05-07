@@ -54,7 +54,8 @@ def getPrescription(apiHost, apiKey, apiParam):
     latestPrescId = None
 
     if Prescription.objects.count() != 0:
-        latestPrescId = Prescription.objects.first().prescId
+        latestPrescId = Prescription.objects.latest('prescId').prescId
+    print(latestPrescId)
 
     # prescIdList = []
     # 지난 1년 처방이력 출력
