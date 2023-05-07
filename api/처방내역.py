@@ -67,7 +67,6 @@ def getPrescription(apiHost, apiKey, apiParam):
         id = i['No']
         if i['No'] != str(latestPrescId) or latestPrescId is None:
             Prescription(prescId=id, prescDate=i['DateOfPreparation'], dispensary=i['Dispensary']).save()
-
             # 처방내역 정보 DB에 저장
             for j in i['DrugList']:
                 ediCode = j['Code']

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Prescription, Schedule, DrugDetail, DrugHour, PillData
+from .models import User, Prescription, Schedule, DrugInfo, PrescDetail, DrugHour, PillData
 
 # Register your models here.
 @admin.register(User)
@@ -26,12 +26,20 @@ class ScheduleAdmin(admin.ModelAdmin):
         'endDate',
         'prescId',
     )
-@admin.register(DrugDetail)
-class DrugDetailAdmin(admin.ModelAdmin):
+@admin.register(DrugInfo)
+class DrugInfoAdmin(admin.ModelAdmin):
     list_display = (
         'drugNo',
         'drugName',
         'drugEffect',
+        'component',
+        'quantity',
+    )
+@admin.register(PrescDetail)
+class PrescDetailAdmin(admin.ModelAdmin):
+    list_display = (
+        'prescId',
+        'drugNo',
         'dosagePerOnce',
         'dailyDose',
         'totalDosingDays',
@@ -42,14 +50,14 @@ class DrugDetailAdmin(admin.ModelAdmin):
 class DrugHourAdmin(admin.ModelAdmin):
     list_display = (
         'scheduleId',
-        'drugId',
+        'drugNo',
         'hour',
     )
 
 @admin.register(PillData)
 class PillDataAdmin(admin.ModelAdmin):
     list_display = (
-        'prescId',
+        'drugNo',
         'pillShape',
         'pillColor',
         'pillText',
