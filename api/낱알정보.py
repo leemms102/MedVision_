@@ -17,6 +17,7 @@ def getPillInfo(presc_id, pill_edi_code):
             else:
                 color = color + ' ' + responseItem["COLOR_CLASS2"]
 
+
         shape = responseItem["DRUG_SHAPE"]
 
         text = ''
@@ -29,4 +30,4 @@ def getPillInfo(presc_id, pill_edi_code):
                 text = text + ' ' + responseItem["PRINT_BACK"]
 
         print(f'{color} {shape} {text}')
-        PillData(prescId=presc_id, drugNo=pill_edi_code, pillShape=shape, pillColor=color, pillText=text).save()
+        PillData(prescId=presc_id, pillShape=shape, pillColor=color, pillText=text).save()

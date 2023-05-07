@@ -4,7 +4,7 @@ from .암호화 import aesEncrypt, rsaEncrypt, getPublicKey
 from .간편인증 import simpleAuth
 from .낱알정보 import getPillInfo
 from .api_param import API_Param
-from users.models import Prescription, DrugInfo, PrescDetail, PillData
+from users.models import Prescription
 
 def getPrescription(apiHost, apiKey, apiParam):
     # RSA Public Key 조회
@@ -68,30 +68,12 @@ def getPrescription(apiHost, apiKey, apiParam):
         if i['No'] != str(latestPrescId) or latestPrescId is None:
             Prescription(prescId=id, prescDate=i['DateOfPreparation'], dispensary=i['Dispensary']).save()
 
-            # 처방내역 정보 DB에 저장
-            for j in i['DrugList']:
-                ediCode = j['Code']
-                print(j)
-                print(j['Code'])
-                # getPillInfo(id, ediCode)
-
-                # 처방내역의 약물 정보 DB에 저장
-                DrugInfo(
-                    drugNo=ediCode,
-                    drugName=j['Name'],
-                    drugEffect=j['Effect'],
-                    component=j['Component'],
-                    quantity=j['Quantity'],
-                ).save()
-
-                PrescDetail(
-                    prescId=id,
-                    drugNo=ediCode,
-                    dosagePerOnce=j['DosagePerOnce'],
-                    dailyDose=j['DailyDose'],
-                    totalDosingDays=j['TotalDosingDays']
-                ).save()
-        else: break
+        # 처방내역 상세정보 DB에 저장
+        for j in i['DrugList']:
+            ediCode = j['Code']
+            print(j)
+            print(j['Code'])
+            getPillInfo(id, ediCode)
 
     # return prescIdList
 
