@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Prescription, Schedule, DrugDetail, DrugHour
+from .models import User, Prescription, Schedule, DrugDetail, DrugHour, PillData
 
 # Register your models here.
 @admin.register(User)
@@ -44,4 +44,13 @@ class DrugHourAdmin(admin.ModelAdmin):
         'scheduleId',
         'drugId',
         'hour',
+    )
+
+@admin.register(PillData)
+class PillDataAdmin(admin.ModelAdmin):
+    list_display = (
+        'prescId',
+        'pillShape',
+        'pillColor',
+        'pillText',
     )

@@ -30,9 +30,6 @@ class DrugDetail(models.Model):
     dosagePerOnce = models.IntegerField()       # 1회 투약량
     dailyDose = models.IntegerField()           # 1일 투여횟수
     totalDosingDays = models.IntegerField()     # 총 투여일수
-    morningHour = models.TimeField(null=True)   # 아침 복용시간
-    lunchHour = models.TimeField(null=True)     # 점심 복용시간
-    eveningHour = models.TimeField(null=True)   # 저녁 복용시간
     scheduleId = models.ForeignKey("Schedule",
                                    on_delete=models.CASCADE,
                                    db_column="scheduleId",
@@ -40,6 +37,23 @@ class DrugDetail(models.Model):
                                    related_name='drugDetails')
 
 class DrugHour(models.Model):
-    scheduleId = models.ForeignKey("Schedule", on_delete=models.CASCADE, db_column="scheduleId")
-    drugId = models.ForeignKey("drugDetail", on_delete=models.CASCADE, db_column="drugId")
+    scheduleId = models.ForeignKey("Schedule",
+                                   on_delete=models.CASCADE,
+                                   db_column="scheduleId",
+                                   related_name="drugHour")
+    drugId = models.ForeignKey("DrugDetail",
+                               on_delete=models.CASCADE,
+                               db_column="drugId",
+                               related_name="drugHour")
     hour = models.TimeField()
+
+class PillData(models.Model):
+    # prescId = models.ForeignKey("Prescription",
+    #                             on_delete=models.PROTECT,
+    #                             db_column="prescId",
+    #                             related_name='pillData')
+
+    prescId = models.DecimalField(max_digits=13, decimal_places=0)
+    pillShape = models.TextField(max_length=6)
+    pillColor = models.TextField(max_length=20)
+    pillText = models.TextField(max_length=30, null=True)

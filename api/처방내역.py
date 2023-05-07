@@ -64,14 +64,16 @@ def getPrescription(apiHost, apiKey, apiParam):
         # prescIdList.append(i['No'])
 
         # Prescription 모델 DB에 저장
+        id = i['No']
         if i['No'] != str(latestPrescId) or latestPrescId is None:
-            Prescription(prescId=i['No'], prescDate=i['DateOfPreparation'], dispensary=i['Dispensary']).save()
+            Prescription(prescId=id, prescDate=i['DateOfPreparation'], dispensary=i['Dispensary']).save()
 
-        # 처방내역 상세정보 출력
+        # 처방내역 상세정보 DB에 저장
         for j in i['DrugList']:
+            ediCode = j['Code']
             print(j)
             print(j['Code'])
-            getPillInfo(j['Code'])
+            getPillInfo(id, ediCode)
 
     # return prescIdList
 
