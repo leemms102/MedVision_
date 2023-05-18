@@ -1,11 +1,29 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
 # Create your models here.
+class UserManager(BaseUserManager):
+    def create_user(self, userId, userPassword, userEmail, **kwargs):
+        # 회원가입 메서드
+        if not userId:
+            raise ValueError(
+                '아이디를 입력해주세요'
+            )
+        if not userPassword:
+            raise ValueError(
+                '비밀번호를 입력해주세요'
+            )
+        user = User(userId=userId,
+                    userPassword=userPassword,
+                    userEmail=userEmail)
+        user.save()
+        return user
+
 class User(models.Model):
     userId = models.CharField(max_length=12, unique=True)
     userPassword = models.CharField(max_length=20)
     userRealName = models.CharField(max_length=10, blank=True, null=False, default="")
-    userEmail = models.EmailField(max_length=25)
+    userEmail = models.EmailField(max_length=25, unique=True)
     userRegisterDatetime = models.DateTimeField(auto_now_add=True)
 
 class Prescription(models.Model):
