@@ -27,7 +27,7 @@ class User(models.Model):
     userRegisterDatetime = models.DateTimeField(auto_now_add=True)
 
 class Prescription(models.Model):
-    userId = models.ForeignKey("User",
+    user = models.ForeignKey("User",
                                on_delete = models.CASCADE,
                                db_column="userId",
                                related_name='prescriptions'
@@ -57,7 +57,11 @@ class PrescDetail(models.Model):
                                 on_delete=models.CASCADE,
                                 db_column="prescId",
                                 related_name='prescDetail')
-    drugNo = models.DecimalField(max_digits=9, decimal_places=0)
+    drugInfo = models.ForeignKey("DrugInfo",  # 약물번호
+                                # primary_key=True,
+                                on_delete=models.CASCADE,
+                                db_column="drugNo",
+                                related_name='prescDetail')
     dosagePerOnce = models.DecimalField(max_digits=6, decimal_places=2)  # 1회 투약량
     dailyDose = models.IntegerField()           # 1일 투여횟수
     totalDosingDays = models.IntegerField()     # 총 투여일수
@@ -65,9 +69,12 @@ class PrescDetail(models.Model):
 class DrugHour(models.Model):
     schedule = models.ForeignKey("Schedule",
                                    on_delete=models.CASCADE,
-                                   db_column="scheduleId",
+                                   db_column="schedule",
                                    related_name="drugHour")
-    drugNo = models.DecimalField(max_digits=9, decimal_places=0)
+    prescDetail = models.ForeignKey("PrescDetail",
+                                   on_delete=models.CASCADE,
+                                   db_column="prescDetail",
+                                   related_name="drugHour")
     hour = models.TimeField()
 
 class PillData(models.Model):
