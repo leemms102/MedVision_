@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate, models
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse 
 from django.shortcuts import render, redirect
+from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User, Prescription, PrescDetail, DrugInfo, Schedule
@@ -177,22 +178,19 @@ class ScheduleListView(generics.ListAPIView):
         # 처방내역 선택
         prescId = request.data['prescId']
         prescription = Prescription.objects.get(prescId=prescId)
-    
-        startDateStr = request.data['startDate']
 
-        # 일정 종료일자 검색 (처방내역에서 계산)
-        items = prescription.prescdetails
-        maxDosingDays = 0
-        for i in items:
-            if i.totalDosingDays > max:
-                maxDosingDays = int(i)
+        # 날짜 등록하는 View에서 구현할 것
+        # # 일정 종료일자 검색 (처방내역에서 계산)
+        # items = prescription.prescdetails
+        # maxDosingDays = 0
+        # for i in items:
+        #     if i.totalDosingDays > max:
+        #         maxDosingDays = int(i)
+        #
+        # startDate = datetime.strptime(prescription.prescDate).date()
+        # endDate = startDate + timedelta(days=maxDosingDays)
 
-        startDate = datetime.strptime(startDate,startDate).date()
-        endDate = startDate + timedelta(days=maxDosingDays)
-
-        Schedule(prescription=prescription, startDate=startDate, endDate=endDate).save()
-        
-
+        Schedule(prescription=prescription).save()
 
 class ScheduleDetailView(APIView):
     def get_schedule(self, request):
@@ -202,6 +200,8 @@ class ScheduleDetailView(APIView):
 
         # Serializer에서 해당 검색
         queryset = PrescDetail.objects.filter(prescription=prescription)
+
+class ScheduleUpdateView(UpdateAPIView): pass
 
 """     
   login via web 
