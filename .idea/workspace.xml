@@ -4,17 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="903cd251-e744-4922-b9e5-ccdf8ee195a1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/search/낱알검색 테스트.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/search/낱알검색.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/search/색상검색.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/cb116290-63f8-445f-9c90-56c45ff2f318.xml" beforeDir="false" />
+    <list default="true" id="903cd251-e744-4922-b9e5-ccdf8ee195a1" name="Changes" comment="- 일정등록, 투약시간 등록 api 구현중&#10;- 알약검색 로직 구현중">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,12 +130,24 @@
       <option name="presentableId" value="Default" />
       <updated>1685513158156</updated>
       <workItem from="1685513161115" duration="6210000" />
-      <workItem from="1685628389025" duration="321000" />
+      <workItem from="1685628389025" duration="1196000" />
     </task>
+    <task id="LOCAL-00001" summary="- 일정등록, 투약시간 등록 api 구현중&#10;- 알약검색 로직 구현중">
+      <created>1685628870374</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1685628870374</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="- 일정등록, 투약시간 등록 api 구현중&#10;- 알약검색 로직 구현중" />
+    <option name="LAST_COMMIT_MESSAGE" value="- 일정등록, 투약시간 등록 api 구현중&#10;- 알약검색 로직 구현중" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MedVision$_.coverage" NAME="낱알검색 테스트 Coverage Results" MODIFIED="1685513321544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/search" />
