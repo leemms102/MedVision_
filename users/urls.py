@@ -11,7 +11,5 @@ urlpatterns = [
     path('prescdetail/', views.PrescDetailListView.as_view()),
     # path('schedules/', views.scheduleList),
 
-
     path('user/', views.UserView.as_view()),
-
 ]

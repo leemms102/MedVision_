@@ -139,9 +139,10 @@ class DrugInfoView(APIView):
     def get(self, request):
         # 알약 일렬번호 가져오기
         drugNo = request.data['drugNo']
+        print(drugNo)
 
         #Serializer에서 해당 알약의 정보 검색
-        queryset = DrugInfo.objects.filter(drugNo=drugNo)
+        queryset = DrugInfo.objects.get(drugNo=drugNo)
 
         #Serializer를 사용하여 응답 데이터 직렬화
         serializer = DrugInfoSerializer(queryset)

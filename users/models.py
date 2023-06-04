@@ -46,7 +46,6 @@ class Schedule(models.Model):
                                 related_name='schedules')
     maxDoseHours = models.IntegerField(default=0)  # 하루 최대 투약횟수
 
-
 class DrugInfo(models.Model):
     drugNo = models.DecimalField(max_digits=9, decimal_places=0, primary_key=True)
     drugName = models.CharField(max_length=25)

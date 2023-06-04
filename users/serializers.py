@@ -32,7 +32,6 @@ class LoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError("아이디와 비밀번호를 모두 입력하세요")
 
-
 class RegisterSerializer(serializers.ModelSerializer):
 
     password2 = serializers.CharField(write_only=True)
@@ -50,7 +49,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         if User.objects.filter(userId=attrs['userId']).exists():
             raise serializers.ValidationError("가입된 Id 입니다.")
 
-        
         if User.objects.filter(userEmail=attrs['userEmail']).exists():
             raise serializers.ValidationError("가입된 email 입니다.")
 
@@ -93,9 +91,23 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         fields = ('prescId', 'details', 'prescDate', 'dispensary')
 
 class ScheduleSerializer(serializers.ModelSerializer):
+
+    def get_details(self, obj):
+        prescription = obj['prescription']
+        details = PrescDetail.objects.filter(prescription=prescription)
+        serializer = PrescDetailSerializer(details, many=True)
+
+        return serializer.data
+
+    details = serializers.SerializerMethodField('get_details')
+
     class Meta:
         model = Prescription
         fields = '__all__'
+
+    def create(self, validated_data):
+        schedule = Schedule.objects.create(prescription=validated_data.get('prescription'))
+
 
 class DrugHourSerializer(serializers.ModelSerializer):
     class Meta:

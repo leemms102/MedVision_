@@ -3,14 +3,12 @@ import numpy as np
 import statistics
 import matplotlib.pyplot as plt
 import colorsys
-import webcolors
 
 # Set color bounds
 # orange_upper = np.array([10, 100, 20])
 # orange_lower = np.array([25, 255, 255])
 colors = {
     '빨강': {
-
         'lower_bound': np.array([0, 50, 50]),
         'upper_bound': np.array([30, 100, 100])
     },
@@ -45,7 +43,9 @@ colors = {
 }
 
 # Load the image and convert it to grayscale
-img = cv2.imread('books.jpg')
+img = cv2.imread('131608290.jpg')
+# img = cv2.imread('1645341302.jpeg')
+# img = cv2.imread('111554131.jpg')
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 img2 = img.copy()
@@ -95,6 +95,7 @@ def show_color(roi):
 
     for color, bounds in colors.items():
         if np.all(hsv >= bounds['lower_bound']) and np.all(hsv <= bounds['upper_bound']):
+            print(f"dominant color: {color}")
             return color
             break
 
@@ -125,8 +126,8 @@ for cnt in contours:
 
     # Approximate the contour as a polygon
     epsilon = 0.001
-    approx = cv2.approxPolyDP(cnt, epsilon * cv2.arcLength(cnt, True), True)
-    # approx = cv2.approxPolyDP(cnt, epsilon, True)
+    # approx = cv2.approxPolyDP(cnt, epsilon * cv2.arcLength(cnt, True), True)
+    approx = cv2.approxPolyDP(cnt, epsilon, True)
 
     # Calculate the positions and area of the polygon
     x, y, w, h = cv2.boundingRect(cnt)
@@ -134,9 +135,10 @@ for cnt in contours:
     ratio = abs(w - h) / w
 
     # Determine if the polygon is pill-shaped
-    if len(approx) >= 5 and len(approx) <= 1000 and cv2.arcLength(cnt, True) < 5000 and area >= 10000:
+    if len(approx) >= 5 and len(approx) <= 2000 and cv2.arcLength(cnt, True) < 5000 and area >= 10000:
 
         print(f"approx: {len(approx)}")
+        print(f"arclength: {cv2.arcLength(cnt, True)}")
         pillNum += 1
 
         # Get pill region and find the average and dominant colors
