@@ -182,7 +182,6 @@ def find_prescription(result, user):
             dataList = get_data(itemList)
 
             if check_pill(result, dataList) == True:
-                result_prescription = model_to_dict(p)
                 return p
 
 # result = pill_scan('135273.jpg')
