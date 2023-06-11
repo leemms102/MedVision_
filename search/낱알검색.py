@@ -157,7 +157,7 @@ def get_data(itemList):
     for i in itemList:
         drug = i.drugInfo
         dosage = i.dosagePerOnce
-        drugNo = drug.drugN
+        drugNo = drug.drugNo
         data = PillData.objects.filter(drugNo=drugNo).first()
         if data is not None:
             if dosage >= 2:
