@@ -1,10 +1,12 @@
 import base64
+import time
+
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5, AES
 import os, requests, base64
 
 apiHost = 'https://api.tilko.net/'
-apiKey = '본인 키'
+apiKey = 'a379ba7545364b1a8e5b4c4ee040aef7'
 
 # AES 암호화 함수
 def aesEncrypt(key, iv, plainText):
@@ -76,16 +78,14 @@ options = {
 
 "json": {
     "PrivateAuthType": "4",
-    "UserName": aesEncrypt(aesKey, aesIv, '이름'),
-    "BirthDate": aesEncrypt(aesKey, aesIv, '생년월일'),
-    "UserCellphoneNumber": aesEncrypt(aesKey, aesIv, '전화번호'),
-    "IdentityNumber": aesEncrypt(aesKey, aesIv, '주민번호'),
-     "PrivateAuthType": "4",
+    "UserName": aesEncrypt(aesKey, aesIv, '임민섭'),
+    "BirthDate": aesEncrypt(aesKey, aesIv, '19980102'),
+    "UserCellphoneNumber": aesEncrypt(aesKey, aesIv, '01095567172'),
+    "IdentityNumber": aesEncrypt(aesKey, aesIv, '9801021074031'),
 },
 }
 
 res = requests.post(url, headers=options['headers'], json=options['json'])
-print(f"res: {res.json()}")
 
 # RSA Public Key 조회
 rsaPublicKey = getPublicKey()
@@ -104,7 +104,7 @@ url = apiHost + "api/v1.0/hirasimpleauth/hiraa050300000100"
 
 # 간편인증 요청 후 받은 값 정리
 reqData = res.json()["ResultData"]
-print(f'res: {reqData}')
+print(f'reqData: {reqData}')
 
 # API 요청 파라미터 설정
 options = {
@@ -115,7 +115,7 @@ options = {
     },
 
     "json": {
-        "IdentityNumber": aesEncrypt(aesKey, aesIv, '주민번호'),
+        "IdentityNumber": aesEncrypt(aesKey, aesIv, '9801021074031'),
         "CxId": reqData["CxId"],
         "PrivateAuthType": reqData["PrivateAuthType"],
         "ReqTxId": reqData["ReqTxId"],
@@ -129,9 +129,9 @@ options = {
 }
 
 # API 호출
-res = requests.post(url, headers=options['headers'], json=options['json'])
-resultList = res.json()["ResultList"]
-
+result = requests.post(url, headers=options['headers'], json=options['json'])
+print(result.json())
+resultList = result.json()["ResultList"]
 
 # 지난 1년 처방이력 출력
 for i in resultList:
@@ -139,4 +139,3 @@ for i in resultList:
     for j in i['DrugList']:
         ediCode = j['Code']
         print(j)
-            

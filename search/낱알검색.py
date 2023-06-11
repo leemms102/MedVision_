@@ -1,6 +1,15 @@
 import cv2
+import numpy
 import numpy as np
 import colorsys
+import os
+import django
+from django.forms.models import model_to_dict
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "medvision_server.settings")
+django.setup()
+
+from users.serializers import PrescDetailSerializer, PrescriptionSerializer
 
 from users.models import User, Prescription, PrescDetail, DrugInfo, PillData
 
@@ -50,7 +59,6 @@ def show_color(pill_roi):
     _, labels, palette = cv2.kmeans(pixels, 5, None, criteria, 10, flags)
     _, counts = np.unique(labels, return_counts=True)
 
-    print(palette)
     dominant = palette[np.argmax(counts)]
     hsv = colorsys.rgb_to_hsv(dominant[0]/255, dominant[1]/255, dominant[2]/255)
     hsv = [hsv[0] * 360, hsv[1] * 100, hsv[2] * 100]
@@ -64,38 +72,45 @@ def show_color(pill_roi):
             return color
             break
 
-def process_image(img_name):
-    img_gray = cv2.cvtColor(img_name, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(img_gray, 190, 255, cv2.THRESH_BINARY_INV)
-    img_blur = cv2.GaussianBlur(thresh, (3, 3), 1)
-    img_canny = cv2.Canny(img_blur, 0, 0)
-    kernel = np.ones((5, 5))
-    img_dilate = cv2.dilate(img_canny, kernel, iterations=1)
-    return cv2.erode(img_dilate, kernel, iterations=1)
+# def process_image(img_name):
+#     img_gray = cv2.cvtColor(img_name, cv2.COLOR_BGR2GRAY)
+#     _, thresh = cv2.threshold(img_gray, 190, 255, cv2.THRESH_BINARY_INV)
+#     img_blur = cv2.GaussianBlur(thresh, (3, 3), 1)
+#     img_canny = cv2.Canny(img_blur, 0, 0)
+#     kernel = np.ones((5, 5))
+#     img_dilate = cv2.dilate(img_canny, kernel, iterations=1)
+#     return cv2.erode(img_dilate, kernel, iterations=1)
 
-def pill_scan(img_name):
+def pill_scan(img_file):
+    # read image file string data
+    filestr = img_file.read()
+    # convert string data to numpy array
+    file_bytes = numpy.fromstring(filestr, numpy.uint8)
+    # convert numpy array to image
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_UNCHANGED)
+
     # Load the image and convert it to grayscale
-    img = cv2.imread(img_name)
+    # img = cv2.imread(img_name)
     rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    # img2 = img.copy()
-    #
-    # # Load image and convert to HSV color space
-    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #
-    # # Apply Gaussian blur to reduce noise and make edges smoother
-    # gray_blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    #
-    # # perform edge detection
-    # edges = cv2.Canny(gray_blur, 30, 100)
-    #
-    # # Convert image to binary using Otsu's thresholding
-    # _, thresh = cv2.threshold(gray_blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    #
-    # # Find contours in the binary image
-    # contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img2 = img.copy()
 
-    contours, hierarchies = cv2.findContours(process_image(img), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    # Load image and convert to HSV color space
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply Gaussian blur to reduce noise and make edges smoother
+    gray_blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # perform edge detection
+    edges = cv2.Canny(gray_blur, 30, 100)
+
+    # Convert image to binary using Otsu's thresholding
+    _, thresh = cv2.threshold(gray_blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Find contours in the binary image
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # contours, hierarchies = cv2.findContours(process_image(img), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cnt = max(contours, key=cv2.contourArea)
 
     avgArray = []
@@ -106,9 +121,9 @@ def pill_scan(img_name):
     for cnt in contours:
 
         # Approximate the contour as a polygon
-        epsilon = 0.01
+        epsilon = 0.001
         # approx = cv2.approxPolyDP(cnt, epsilon * cv2.arcLength(cnt, True), True)
-        approx = cv2.approxPolyDP(cnt, epsilon * cv2.arcLength(cnt, True), True)
+        approx = cv2.approxPolyDP(cnt, epsilon, True)
 
         # Calculate the positions and area of the polygon
         x, y, w, h = cv2.boundingRect(cnt)
@@ -116,7 +131,7 @@ def pill_scan(img_name):
         ratio = abs(w - h) / w
 
         # Determine if the polygon is pill-shaped
-        if len(approx) >= 5 and len(approx) <= 1000 and cv2.arcLength(cnt, True) < 5000 and area >= 10000:
+        if len(approx) >= 5 and len(approx) <= 2000 and cv2.arcLength(cnt, True) < 5000 and area >= 10000:
             pillNum += 1
 
             # Get pill region and find the average and dominant colors
@@ -142,34 +157,34 @@ def get_data(itemList):
     for i in itemList:
         drug = i.drugInfo
         dosage = i.dosagePerOnce
-        drugNo = drug.drugNo
-        # try:
-        #     PillData.objects.get(drugNo=drugNo)
-        # except PillData.DoesNotExist:
-        #     continue
-
+        drugNo = drug.drugN
         data = PillData.objects.filter(drugNo=drugNo).first()
         if data is not None:
-            for i in range(dosage):
-                dataList.append({'color': data.pillColor, 'shape': data.pillShape})
+            if dosage >= 2:
+               dosage = int(dosage)
+               for i in range(dosage):
+                 dataList.append({'color': data.pillColor, 'shape': data.pillShape})
+            else: dataList.append({'color': data.pillColor, 'shape': data.pillShape})
         else: continue
 
     return dataList
 
 def check_pill(result, dataList):
-    if(result['pillNum'] == len(dataList)):
-        return dataList.containsAll(result['contents'])
-    else:
-        return False
+    check = all(item in dataList for item in result['contents'])
+    return check
 
 def find_prescription(result, user):
     pillNum = result['number']
     user = User.objects.get(userId=user)
-    for p in Prescription.objects.get(user=user):
+    for p in Prescription.objects.filter(user=user):
         itemList = PrescDetail.objects.filter(prescription=p)
         if len(itemList) >= pillNum:
             dataList = get_data(itemList)
-            if check_pill(result, dataList) == True:
-                print(itemList)
 
-# pill_scan('books.jpg')
+            if check_pill(result, dataList) == True:
+                result_prescription = model_to_dict(p)
+                return p
+
+# result = pill_scan('135273.jpg')
+# # print(result)
+# find_prescription(result, "leemms102")

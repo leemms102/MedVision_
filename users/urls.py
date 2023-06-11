@@ -9,6 +9,7 @@ urlpatterns = [
     path('prescription/', views.PrescriptionListView.as_view()),
     path('druginfo/', views.DrugInfoView.as_view()),
     path('prescdetail/', views.PrescDetailListView.as_view()),
+    path('pilldata/', views.PillDataView.as_view()),
     # path('schedules/', views.scheduleList),
 
     path('user/', views.UserView.as_view()),

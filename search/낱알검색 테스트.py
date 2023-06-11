@@ -21,7 +21,7 @@ colors = {
         'upper_bound': np.array([45, 100, 100])
     },
     '파랑': {
-        'lower_bound': np.array([210, 50, 50]),
+        'lower_bound': np.array([180, 50, 50]),
         'upper_bound': np.array([270, 100, 100])
     },
     '초록': {
@@ -39,11 +39,15 @@ colors = {
     '갈색': {
         'lower_bound': np.array([0, 20, 20]),
         'upper_bound': np.array([30, 60, 40])
-    }
+    },
+    '분홍': {
+            'lower_bound': np.array([0, 20, 80]),
+            'upper_bound': np.array([320, 90, 100])
+        }
 }
 
 # Load the image and convert it to grayscale
-img = cv2.imread('131608290.jpg')
+img = cv2.imread('122004099.jpg')
 # img = cv2.imread('1645341302.jpeg')
 # img = cv2.imread('111554131.jpg')
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -172,7 +176,7 @@ for cnt in contours:
 result = {'number': pillNum, 'contents': pillList}
 print(result)
 # Display the output image
-# img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+img = cv2.resize(img, (0, 0), fx=0.2, fy=0.2)
 cv2.imshow('output', img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -19,19 +21,20 @@ def main(request):
 
 @api_view(['GET', 'POST'])
 def authenticate(request):
-    user = User.objects.get(userId=request.session['userId'])
-    print(request.session['userId'])
+    # user = User.objects.get(userId=request.session['userId'])
+    user = User.objects.get(userId=request.headers['Username'])
+    print(request.headers['Username'])
     if request.method == 'GET':
         return render(request, "api/hira_authenticate.html")
 
     elif request.method == 'POST':
         print("ok")
-        print(request.POST)
-
-        username = request.POST['username']
-        birthdate = request.POST['birthdate']
-        cellphoneNumber = request.POST['cellphone'].replace('-', '')
-        identityNumber = request.POST['identity']
+        print(f"request body: {json.loads(request.body)}")
+        jsonData = json.loads(request.body)
+        username = jsonData['username']
+        birthdate = jsonData['birthdate']
+        cellphoneNumber = jsonData['cellphone'].replace('-', '')
+        identityNumber = jsonData['identity']
 
         apiParam = API_Param(username, birthdate, cellphoneNumber, identityNumber)
 
@@ -45,3 +48,4 @@ def authenticate(request):
 
         # return HttpResponse("받아오기 성공")
         return JsonResponse(data=request.POST)
+

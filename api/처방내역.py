@@ -1,4 +1,5 @@
 import os, base64
+import asyncio
 import requests
 from .암호화 import aesEncrypt, rsaEncrypt, getPublicKey
 from .간편인증 import simpleAuth
@@ -29,6 +30,7 @@ def getPrescription(user, apiParam):
     # 간편인증 요청 후 받은 값 정리
     reqData = simpleAuth(apiHost, apiParam)
     print(f'res: {reqData}')
+    print(f'사용자:{user.userId}')
 
     # API 요청 파라미터 설정
     options = {
@@ -53,7 +55,10 @@ def getPrescription(user, apiParam):
     }
 
     # API 호출
+    # loop = asyncio.get_event_loop()
     res = requests.post(url, headers=options['headers'], json=options['json'])
+    print(res.json())
+    # res = await loop.run_in_executor(None, requests.post(url, headers=options['headers'], json=options['json']))
     resultList = res.json()["ResultList"]
     latestPrescId = None
 

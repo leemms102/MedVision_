@@ -6,8 +6,9 @@ from django.shortcuts import render, redirect
 from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User, Prescription, PrescDetail, DrugInfo, Schedule
-from .serializers import UserSerializer, PrescriptionSerializer, PrescDetailSerializer, DrugInfoSerializer, ScheduleSerializer, LoginSerializer, RegisterSerializer
+from .models import User, Prescription, PrescDetail, DrugInfo, Schedule, PillData
+from .serializers import UserSerializer, PrescriptionSerializer, PrescDetailSerializer, DrugInfoSerializer, \
+    ScheduleSerializer, LoginSerializer, RegisterSerializer, PillDataSerializer
 from rest_framework import generics, status
 from datetime import datetime, timedelta
 
@@ -91,6 +92,7 @@ class RegisterView(generics.CreateAPIView):
         loginUser = authenticate(username=username, password=password)
         login(self.request, user=loginUser)
 
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class LoginView(APIView):
@@ -123,9 +125,13 @@ class UserView(generics.ListCreateAPIView):
 
 class PrescriptionListView(generics.RetrieveAPIView):
 
-    def get(self, request):
+    def post(self, request):
         # 로그인된 사용자 정보 가져오기
-        user = User.objects.get(userId=request.user)
+        username = request.headers['Username']
+        print(request.headers['Username'])
+        # user = User.objects.get(userId=request.user)
+        user = User.objects.get(userId=username)
+
         print(request.user)
         print(request.user.is_authenticated)
         # Serializer에서 해당 사용자의 정보 검색
@@ -136,7 +142,7 @@ class PrescriptionListView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 class DrugInfoView(APIView):
-    def get(self, request):
+    def post(self, request):
         # 알약 일렬번호 가져오기
         drugNo = request.data['drugNo']
         print(drugNo)
@@ -149,16 +155,28 @@ class DrugInfoView(APIView):
         return Response(serializer.data)
     
 class PrescDetailListView(generics.ListAPIView):
-    def get(self, request):
+    def post(self, request):
         # 처방번호 가져오기
         prescId = request.data['prescId']
-        prescription = Prescription.objects.get(prescId=prescId)
+        print(prescId)
 
         # Serializer에서 해당 처방내역 정보 검색
-        queryset = PrescDetail.objects.filter(prescription=prescription)
+        # queryset = PrescDetail.objects.filter(prescription=prescription)
+        queryset = Prescription.objects.get(prescId=prescId)
 
         # Serializer를 사용하여 응답 데이터 직렬화
-        serializer = PrescDetailSerializer(queryset, many=True)
+        serializer = PrescriptionSerializer(queryset, many=False)
+        return Response(serializer.data)
+
+class PillDataView(APIView):
+    def post(self, request):
+        drugNo = request.data['drugNo']
+
+        # Serializer에서 해당 알약 정보 검색
+        queryset = PillData.objects.get(drugNo=drugNo)
+
+        # Serializer를 사용하여 응답 데이터 직렬화
+        serializer = PillDataSerializer(queryset, many=False)
         return Response(serializer.data)
     
 class ScheduleListView(generics.ListAPIView):

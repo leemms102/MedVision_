@@ -82,3 +82,4 @@ class PillData(models.Model):
     pillShape = models.TextField(max_length=6)
     pillColor = models.TextField(max_length=20)
     pillText = models.TextField(max_length=30, null=True)
+    imageUrl = models.URLField(null=True)

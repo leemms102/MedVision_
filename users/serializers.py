@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import models, authenticate, login
-from .models import User, Prescription, DrugInfo, PrescDetail, Schedule, DrugHour
+from .models import User, Prescription, DrugInfo, PrescDetail, Schedule, DrugHour, PillData
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,13 +69,26 @@ class DrugInfoSerializer(serializers.ModelSerializer):
 
 class PrescDetailSerializer(serializers.ModelSerializer):
     drugName = serializers.ReadOnlyField(source='drugInfo.drugName')
+    drugNo = serializers.ReadOnlyField(source='drugInfo.drugNo')
 
     class Meta:
         model = PrescDetail
         fields =('drugName',
+                'drugNo',
                 'dosagePerOnce',
                 'dailyDose',
                 'totalDosingDays')
+
+class PillDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PillData
+        fields = (
+            'drugNo',
+            'pillShape',
+            'pillColor',
+            'imageUrl'
+        )
+
 
 class PrescriptionSerializer(serializers.ModelSerializer):
     def get_details(self, obj):
